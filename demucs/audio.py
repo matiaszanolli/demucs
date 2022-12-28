@@ -240,11 +240,20 @@ def save_audio(wav, path, samplerate, bitrate=320, clip='rescale',
     based on the given `clip` strategy. If the path ends in `.mp3`, this
     will save as mp3 with the given `bitrate`.
     """
+    ta.set_audio_backend("sox_io")
     wav = prevent_clip(wav, mode=clip)
     path = Path(path)
     suffix = path.suffix.lower()
     if suffix == ".mp3":
         encode_mp3(wav, path, samplerate, bitrate, verbose=True)
+    if suffix == ".opus":
+        if as_float:
+            bits_per_sample = 32
+        ta.save(str(path), wav, sample_rate=samplerate)
+    if suffix == ".ogg":
+        if as_float:
+            bits_per_sample = 32
+        ta.save(str(path), wav, sample_rate=samplerate, compression=3)
     elif suffix == ".wav":
         if as_float:
             bits_per_sample = 32

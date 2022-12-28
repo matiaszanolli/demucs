@@ -105,7 +105,11 @@ def main():
                              "if necessary  (rescale) or hard clipping (clamp).")
     parser.add_argument("--mp3", action="store_true",
                         help="Convert the output wavs to mp3.")
-    parser.add_argument("--mp3-bitrate",
+    parser.add_argument("--opus", action="store_true",
+                        help="Convert the output wavs to opus.")
+    parser.add_argument("--ogg", action="store_true",
+                        help="Convert the output wavs to OGG Vorbis.")
+    parser.add_argument("--bitrate",
                         default=320,
                         type=int,
                         help="Bitrate of converted mp3.")
@@ -167,11 +171,15 @@ def main():
 
         if args.mp3:
             ext = "mp3"
+        if args.opus:
+            ext = "opus"
+        if args.ogg:
+            ext = "ogg"
         else:
             ext = "wav"
         kwargs = {
             'samplerate': model.samplerate,
-            'bitrate': args.mp3_bitrate,
+            'bitrate': args.bitrate,
             'clip': args.clip_mode,
             'as_float': args.float32,
             'bits_per_sample': 24 if args.int24 else 16,
