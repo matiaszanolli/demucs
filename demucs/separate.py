@@ -126,6 +126,9 @@ def main():
     except ModelLoadingError as error:
         fatal(error.args[0])
 
+    if args.float32:
+        th.set_float32_matmul_precision('high')
+
     if args.segment is not None and args.segment < 8:
         fatal("Segment must greater than 8. ")
 
