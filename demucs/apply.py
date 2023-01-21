@@ -12,6 +12,7 @@ import random
 import typing as tp
 
 import torch as th
+import torch._dynamo as dynamo
 from torch import nn
 from torch.nn import functional as F
 import tqdm
@@ -119,7 +120,6 @@ def tensor_chunk(tensor_or_chunk):
         assert isinstance(tensor_or_chunk, th.Tensor)
         return TensorChunk(tensor_or_chunk)
 
-
 def apply_model(model, mix, shifts=1, split=True,
                 overlap=0.25, transition_power=1., progress=False, device=None,
                 num_workers=0, pool=None):
@@ -162,6 +162,7 @@ def apply_model(model, mix, shifts=1, split=True,
         # Special treatment for bag of model.
         # We explicitely apply multiple times `apply_model` so that the random shifts
         # are different for each model.
+        model = th.compile(model, mode="reduce-overhead", backend="inductor")
         estimates = 0
         totals = [0] * len(model.sources)
         for sub_model, weight in zip(model.models, model.weights):
